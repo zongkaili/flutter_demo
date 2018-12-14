@@ -12,21 +12,29 @@ class SampleApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new SampleAppPage(),
+      home: new SampleAppPage('Page 0'),
+      routes: <String, WidgetBuilder> {
+        '/a': (BuildContext context) => new SampleAppPage('Page A'),
+        '/b': (BuildContext context) => new SampleAppPage('Page B'),
+        '/c': (BuildContext context) => new SampleAppPage('Page C'),
+      },
     );
   }
 }
 
 class SampleAppPage extends StatefulWidget {
-  SampleAppPage({Key key}) : super(key: key);
+  String title;
+  SampleAppPage(this.title, {Key key}) : super(key: key);
 
   @override
-  _SampleAppPageState createState() => new _SampleAppPageState();
+  _SampleAppPageState createState() => new _SampleAppPageState(title);
 }
 
 class _SampleAppPageState extends State<SampleAppPage> {
   // Default placeholder text
-  String textToShow = "I Like Flutter";
+  String textToShow;
+
+  _SampleAppPageState(this.textToShow);
 
   void _updateText() {
     setState(() {
@@ -35,15 +43,19 @@ class _SampleAppPageState extends State<SampleAppPage> {
     });
   }
 
+  void _switchPage() {
+    Navigator.of(context).pushNamed("/b");
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Sample App"),
+        title: new Text(textToShow),
       ),
-      body: new Center(child: new Text(textToShow)),
+      body: new Center(child: new CustomButton(textToShow)),
       floatingActionButton: new FloatingActionButton(
-        onPressed: _updateText,
+        onPressed: _switchPage,
         tooltip: 'Update Text',
         child: new Icon(Icons.update),
       ),
@@ -51,3 +63,12 @@ class _SampleAppPageState extends State<SampleAppPage> {
   }
 }
 
+class CustomButton extends StatelessWidget {
+  final String label;
+  CustomButton(this.label);
+
+  @override
+  Widget build(BuildContext context) {
+    return new RaisedButton(onPressed: () {}, child: new Text(label));
+  }
+}
