@@ -99,24 +99,26 @@ class ListViewState extends State<ListViewWidget> {
   loadData() async {
     String dataURL = "https://jsonplaceholder.typicode.com/posts";
 
+    //普通方式请求数据
 //    http.Response response = await http.get(dataURL);
 //    setState(() {
 //      widgets = json.decode(response.body);
 //    });
 
-    //采用Isolate的方式
+    //采用Isolate的方式请求数据
     ReceivePort receivePort = new ReceivePort();
     await Isolate.spawn(dataLoader, receivePort.sendPort);
     SendPort sendPort = await receivePort.first;
 
     List msg = await sendReceive(sendPort, dataURL);
 
+    //通知flutter更新状态
     setState(() {
       widgets = msg;
     });
   }
 
-  //the entry point for the isolate
+  // isolate的方式异步加载数据
   static dataLoader(SendPort sendPort) async {
       //Open the ReceivePort for incoming messages.
      ReceivePort port = new ReceivePort();
